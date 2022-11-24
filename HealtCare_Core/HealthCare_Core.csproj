@@ -17,7 +17,7 @@
 
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\healtcare_common\HealtCare_Common.csproj" />
+	  <ProjectReference Include="..\healtcare_common\HealthCare_Common.csproj" />
 	  <ProjectReference Include="..\HealthCare_DbModel\HealthCare_DbModel.csproj" />
 	  <ProjectReference Include="..\HealthCare_ModelView\HealthCare_ModelView.csproj" />
 	</ItemGroup>

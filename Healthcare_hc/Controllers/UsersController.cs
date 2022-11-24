@@ -1,12 +1,13 @@
 ﻿using HealthCare_Core.Managers.Interfaces;
 using HealthCare_ModelView;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Healthcare_hc.Controllers
 {
+    //[Route("api/[controller]")]
+    [ApiController]
+
     public class UsersController : Controller
     {
         private IUserManager _userManager;
@@ -22,7 +23,6 @@ namespace Healthcare_hc.Controllers
 
         [Route("api/user/signUp")]
         [HttpPost]
-        [AllowAnonymous]
         public IActionResult SignUp([FromBody] UserRegistrationModel userReg)
         {
             var res = _userManager.SignUp(userReg);
@@ -30,9 +30,8 @@ namespace Healthcare_hc.Controllers
         }
 
 
-        [Route("api//user/login")]
+        [Route("api/user/login")]
         [HttpPost]
-        [AllowAnonymous]
         public IActionResult Login([FromBody] LoginModelView userLogin)
         {
             var res = _userManager.Login(userLogin);

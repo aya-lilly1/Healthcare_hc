@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Healthcare_hc.Models.RoleModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,6 +10,10 @@ namespace HealthCare_ModelView
 {
     public class UserModelView
     {
+        public UserModelView()
+        {
+            Permissions = new List<UserPermissionView>();
+        }
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -23,5 +28,7 @@ namespace HealthCare_ModelView
         public int CityId { get; set; }
         public string Phone { get; set; }
         public DateTime Birthday { get; set; }
+
+        public List<UserPermissionView> Permissions { get; set; }
     }
 }

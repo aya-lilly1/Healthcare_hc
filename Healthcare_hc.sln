@@ -5,9 +5,9 @@ VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Healthcare_hc", "Healthcare_hc\Healthcare_hc.csproj", "{27FBE6EA-8FDC-4799-9302-88A737601285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealtCare_Common", "healtcare_common\HealtCare_Common.csproj", "{4E222EF8-FF95-4FB2-A146-0D2BF0D03D22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_Common", "healtcare_common\HealthCare_Common.csproj", "{4E222EF8-FF95-4FB2-A146-0D2BF0D03D22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealtCare_Core", "HealtCare_Core\HealtCare_Core.csproj", "{7D6DF570-8E69-4FD5-99BD-3B50BD2242C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_Core", "HealtCare_Core\HealthCare_Core.csproj", "{7D6DF570-8E69-4FD5-99BD-3B50BD2242C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_DbModel", "HealthCare_DbModel\HealthCare_DbModel.csproj", "{D9E845AE-E9F2-4C0D-B7EC-827BAAC3D316}"
 EndProject
