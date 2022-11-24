@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Healthcare_hc.Models.RoleModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,6 +10,11 @@ namespace Healthcare_hc.Models
 {
     public partial class User
     {
+        public User()
+        {
+            Blogs = new HashSet<Blog>();
+            UserRoles = new HashSet<UserRole>();
+        }
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -33,5 +39,7 @@ namespace Healthcare_hc.Models
         public virtual Admin Admin { get; set; }
         public virtual Doctor Doctor { get; set; }
         public virtual Patient Patient { get; set; }
+        public virtual ICollection<Blog> Blogs { get; set; }
+        public virtual ICollection<UserRole> UserRoles { get; set; }
     }
 }

@@ -1,5 +1,8 @@
 using AutoMapper;
+using HealtCare_Core.Managers;
+using HealtCare_Core.Managers.Interfaces;
 using HealtCare_Core.Mapper;
+using HealthCare_Core.Managers.Interfaces;
 using Healthcare_hc.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -39,64 +42,68 @@ namespace Healthcare_hc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();
-         
-            services.AddAutoMapper(typeof(Startup));
-            services.AddDbContext<healthcare_hcContext>();
-
-            services.AddLogging();
-
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Healthcare_hc", Version = "v1" });
+               
+                c.AddSecurityDefinition("Bearer",
+                         new OpenApiSecurityScheme()
+                         {
+                             Description = "Please insert Bearer JWT token into field. Example: 'Bearer {token}'",
+                             Name = "Authorization",
+                             In = ParameterLocation.Header,
+                             Type = SecuritySchemeType.ApiKey
+                         });
 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "Please insert Bearer JWT token, Example: 'Bearer {token}'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
                     {
-                        new OpenApiSecurityScheme
                         {
-                            Reference = new OpenApiReference
+                            new OpenApiSecurityScheme
                             {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                },
+                                Scheme = "oauth2",
+                                Name = "Bearer",
+                                In = ParameterLocation.Header
                             },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header
-                        },
-                        new List<string>()
-                    }
-                });
+                            new List<string>()
+                        }
+                    });
 
             });
 
+            services.AddDbContext<healthcare_hcContext>();
+
+            services.AddScoped<IUserManager, UserManager>();
+
+            services.AddScoped<ICityManager, CityManager>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                   .AddJwtBearer(options =>
-                   {
-                       options.TokenValidationParameters = new TokenValidationParameters
-                       {
-                           ValidateIssuer = true,
-                           ValidateAudience = true,
-                           ValidateLifetime = true,
-                           ValidateIssuerSigningKey = true,
-                           ValidIssuer = Configuration["Jwt:Issuer"], // test.com
-                           ValidAudience = Configuration["Jwt:Issuer"],
-                           ClockSkew = TimeSpan.Zero,
-                           IssuerSigningKey = new SymmetricSecurityKey(
-                                                  Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])
-                                                  )
-                       };
-                   });
+                  .AddJwtBearer(c =>
+                  {
+                      c.TokenValidationParameters = new TokenValidationParameters
+                      {
+                          ValidateIssuer = true,
+                          ValidateAudience = true,
+                          ValidateLifetime = true,
+                          ValidateIssuerSigningKey = true,
+                          ValidIssuer = Configuration["Jwt:Issuer"],
+                          ValidAudience = Configuration["Jwt:Issuer"],
+                          ClockSkew = TimeSpan.Zero,
+                          IssuerSigningKey = new SymmetricSecurityKey(
+                                                 Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                      };
+                  });
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -107,11 +114,13 @@ namespace Healthcare_hc
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Healthcare_hc v1"));
+              
             }
 
             Log.Logger = new LoggerConfiguration()
                           .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Minute)
                           .CreateLogger();
+           
 
             app.UseHttpsRedirection();
 

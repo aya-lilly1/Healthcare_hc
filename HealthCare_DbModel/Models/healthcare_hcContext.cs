@@ -1,4 +1,5 @@
 ﻿using System;
+using Healthcare_hc.Models.RoleModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -28,6 +29,13 @@ namespace Healthcare_hc.Models
         public virtual DbSet<PatientAppointment> PatientAppointments { get; set; }
         public virtual DbSet<State> States { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Role> Role { get; set; }
+        public virtual DbSet<Module> Module { get; set; }
+        public virtual DbSet<Permission> Permission { get; set; }
+        public virtual DbSet<RolePermission> RolePermission { get; set; }
+        public virtual DbSet<UserRole> UserRole { get; set; }
+
+        public virtual DbSet<UserPermissionView> UserPermissionView { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -489,6 +497,233 @@ namespace Healthcare_hc.Models
                     .HasForeignKey(d => d.StateId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("stateId_users");
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.HasIndex(e => e.Id)
+                    .HasDatabaseName("Id_UNIQUE")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.RoleId)
+                      .HasDatabaseName("RoleId_UserGroupId_idx");
+
+                entity.HasIndex(e => e.UserId)
+                      .HasDatabaseName("GroupId_UserGroupId_idx");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.RoleId).HasColumnType("int(11)");
+
+                entity.Property(e => e.Archived).HasColumnType("tinyint(3)");
+
+
+                entity.Property(e => e.CreatedUTC)
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.LastUpdatedUTC)
+                        .HasColumnType("datetime")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Archived)
+                      .HasColumnType("tinyint(3)");
+
+                entity.HasOne(d => d.Users)
+                      .WithMany(p => p.UserRoles)
+                      .HasForeignKey(d => d.UserId)
+                      .OnDelete(DeleteBehavior.ClientSetNull)
+                      .HasConstraintName("UserRole_UserId");
+
+                entity.HasOne(d => d.Role)
+                      .WithMany(p => p.UserRoles)
+                      .HasForeignKey(d => d.RoleId)
+                      .OnDelete(DeleteBehavior.ClientSetNull)
+                      .HasConstraintName("UserRole_RoleId");
+
+            });
+
+            modelBuilder.Entity<RolePermission>(entity =>
+            {
+                entity.HasIndex(e => e.Id)
+                      .HasDatabaseName("Id_UNIQUE")
+                      .IsUnique();
+
+                entity.HasIndex(e => e.RoleId)
+                      .HasDatabaseName("RoleId_RolePermission_idx");
+
+                entity.HasIndex(e => e.PermissionId)
+                      .HasDatabaseName("PermissionId_UserPermissionId_idx");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.RoleId).HasColumnType("int(11)");
+                entity.Property(e => e.PermissionId).HasColumnType("int(11)");
+
+                entity.Property(e => e.Archived).HasColumnType("tinyint(3)");
+
+                entity.Property(e => e.CreatedUTC)
+                      .HasColumnType("datetime")
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.LastUpdatedUTC)
+                      .HasColumnType("datetime")
+                      .ValueGeneratedOnAddOrUpdate()
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Archived)
+                      .HasColumnType("tinyint(3)");
+
+                entity.HasOne(d => d.Role)
+                      .WithMany(p => p.RolePermissions)
+                      .HasForeignKey(d => d.RoleId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("RoleId_RolePermission");
+
+                entity.HasOne(d => d.Permission)
+                      .WithMany(p => p.RolePermissions)
+                      .HasForeignKey(d => d.PermissionId)
+                      .OnDelete(DeleteBehavior.ClientSetNull)
+                      .HasConstraintName("PermissionId_UserPermissionId");
+            });
+
+            modelBuilder.Entity<Permission>(entity =>
+            {
+                entity.HasIndex(e => e.Id)
+                    .HasDatabaseName("Id_UNIQUE")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.ModuleId)
+                      .HasDatabaseName("ModuleId_PrmessionModuleId_idx");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.ModuleId).HasColumnType("int(11)");
+
+                entity.Property(e => e.Archived).HasColumnType("tinyint(3)");
+
+                entity.Property(e => e.Description)
+                      .IsRequired()
+                      .HasColumnType("TEXT");
+
+                entity.Property(e => e.Title)
+                      .IsRequired()
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Code)
+                      .IsRequired()
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.CreatedUTC)
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.LastUpdatedUTC)
+                        .HasColumnType("datetime")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Archived)
+                      .HasColumnType("tinyint(3)");
+
+                entity.HasOne(d => d.Module)
+                      .WithMany(p => p.UserPermissions)
+                      .HasForeignKey(d => d.ModuleId)
+                      .OnDelete(DeleteBehavior.ClientSetNull)
+                      .HasConstraintName("ModuleId_PrmessionModuleId");
+
+            });
+
+            modelBuilder.Entity<Module>(entity =>
+            {
+                entity.HasIndex(e => e.Id)
+                    .HasDatabaseName("Id_UNIQUE")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Archived).HasColumnType("tinyint(3)");
+
+                entity.Property(e => e.Name)
+                      .IsRequired()
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Key)
+                      .IsRequired()
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.CreatedUTC)
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.LastUpdatedUTC)
+                        .HasColumnType("datetime")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Archived)
+                      .HasColumnType("tinyint(3)");
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.HasIndex(e => e.Id)
+                      .HasDatabaseName("Id_UNIQUE")
+                      .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.BusinessUnitId).HasColumnType("int(11)");
+
+                entity.Property(e => e.Archived).HasColumnType("tinyint(3)");
+
+                entity.Property(e => e.Name)
+                      .IsRequired()
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.CreatedUTC)
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.LastUpdatedUTC)
+                        .HasColumnType("datetime")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Archived)
+                      .HasColumnType("tinyint(3)");
+            });
+
+            modelBuilder.Entity<UserPermissionView>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView(nameof(UserPermissionView));
+
+                entity.Property(e => e.UserId).HasColumnType("int(11)");
+
+                entity.Property(e => e.ModuleId).HasColumnType("int(11)");
+
+                entity.Property(e => e.RoleId).HasColumnType("int(11)");
+
+                entity.Property(e => e.BusinessUnitId).HasColumnType("int(11)");
+
+                entity.Property(e => e.Title)
+                      .HasColumnType("varchar(255)")
+                      .UseCollation("utf8_general_ci");
+
+                entity.Property(e => e.RoleName)
+                      .HasColumnType("varchar(255)")
+                      .UseCollation("utf8_general_ci");
+
+                entity.Property(e => e.Code)
+                      .HasColumnType("varchar(255)")
+                      .UseCollation("utf8_general_ci");
+
+                entity.Property(e => e.ModuleKey)
+                      .HasColumnType("varchar(255)")
+                      .UseCollation("utf8_general_ci");
             });
 
             OnModelCreatingPartial(modelBuilder);

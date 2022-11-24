@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 namespace Healthcare_hc.Models
 {
-    public partial class Doctor : User
-    {
+    public partial class Doctor :User
+     {
         public Doctor()
         {
             Blogs = new HashSet<Blog>();
         }
 
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public int DoctorId { get; set; }
         public int ClinicId { get; set; }
         public int DepartmentId { get; set; }
