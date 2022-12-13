@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿  using AutoMapper;
+using HealtCare_Core.Managers.Interfaces;
 using HealthCare_Common.Extensions;
 using HealthCare_Core.Managers.Interfaces;
 using Healthcare_hc.Models;
@@ -16,12 +17,14 @@ namespace HealthCare_Core.Managers
         private healthcare_hcContext _dbContext;
         private IMapper _mapper;
         private IBlogManager _blogManager;
+        private IDoctorManager _doctorManager;
 
-        public CommonManager(healthcare_hcContext dbContext, IMapper mapper, IBlogManager blogManager)
+        public CommonManager(healthcare_hcContext dbContext, IMapper mapper, IBlogManager blogManager, IDoctorManager doctorManager )
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _blogManager = blogManager;
+            _doctorManager = doctorManager;
         }
 
         public UserModelView GetUserRole(UserModelView user)

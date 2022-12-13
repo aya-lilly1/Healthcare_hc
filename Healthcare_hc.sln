@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Healthcare_hc", "Healthcare_hc\Healthcare_hc.csproj", "{27FBE6EA-8FDC-4799-9302-88A737601285}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Healthcare_hc", "Healthcare_hc\Healthcare_hc.csproj", "{27FBE6EA-8FDC-4799-9302-88A737601285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_Common", "healtcare_common\HealthCare_Common.csproj", "{4E222EF8-FF95-4FB2-A146-0D2BF0D03D22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthCare_Common", "healtcare_common\HealthCare_Common.csproj", "{4E222EF8-FF95-4FB2-A146-0D2BF0D03D22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_Core", "HealtCare_Core\HealthCare_Core.csproj", "{7D6DF570-8E69-4FD5-99BD-3B50BD2242C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthCare_Core", "HealtCare_Core\HealthCare_Core.csproj", "{7D6DF570-8E69-4FD5-99BD-3B50BD2242C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_DbModel", "HealthCare_DbModel\HealthCare_DbModel.csproj", "{D9E845AE-E9F2-4C0D-B7EC-827BAAC3D316}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthCare_DbModel", "HealthCare_DbModel\HealthCare_DbModel.csproj", "{D9E845AE-E9F2-4C0D-B7EC-827BAAC3D316}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_ModelView", "HealthCare_ModelView\HealthCare_ModelView.csproj", "{379B8CC7-9790-4AE3-9996-CBF5C346F31D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthCare_ModelView", "HealthCare_ModelView\HealthCare_ModelView.csproj", "{379B8CC7-9790-4AE3-9996-CBF5C346F31D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_EmailService", "EmailService\HealthCare_EmailService.csproj", "{9A1ADEA0-5969-492C-8C78-C4C301DE08A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare_infrastructure", "HealthCare_infrastructure\HealthCare_infrastructure.csproj", "{321692CF-12D4-4E47-9407-2B264C17107C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{379B8CC7-9790-4AE3-9996-CBF5C346F31D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{379B8CC7-9790-4AE3-9996-CBF5C346F31D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{379B8CC7-9790-4AE3-9996-CBF5C346F31D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A1ADEA0-5969-492C-8C78-C4C301DE08A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A1ADEA0-5969-492C-8C78-C4C301DE08A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A1ADEA0-5969-492C-8C78-C4C301DE08A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A1ADEA0-5969-492C-8C78-C4C301DE08A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{321692CF-12D4-4E47-9407-2B264C17107C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{321692CF-12D4-4E47-9407-2B264C17107C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{321692CF-12D4-4E47-9407-2B264C17107C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{321692CF-12D4-4E47-9407-2B264C17107C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

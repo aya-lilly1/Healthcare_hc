@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
 using HealthCare_Common.Extensions;
 using HealthCare_Core.Managers.Interfaces;
+using HealthCare_EmailService;
 using Healthcare_hc.Models;
-using HealthCare_Helper;
+using HealthCare_infrastructure;
+using HealthCare_Models.Static;
 using HealthCare_ModelView;
+using HealthCare_ModelView.Enums;
+using HealthCare_Notifications;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -17,15 +22,17 @@ namespace HealtCare_Core.Managers
     {
         private healthcare_hcContext _dbContext;
         private IMapper _mapper;
-     //   private readonly IEmailSender _emailSender;
-     //  private readonly IConfigurationSettings _configurationSettings;
+        private readonly IEmailSender _emailSender;
+        private readonly IConfigurationSettings _configurationSettings;
 
 
-        public UserManager(healthcare_hcContext csvdbContext, IMapper mapper )
+        public UserManager(healthcare_hcContext dbContext, IMapper mapper, IEmailSender emailSender, IConfigurationSettings configurationSettings)
         {
-            _dbContext = csvdbContext;
+            _dbContext = dbContext;
             _mapper = mapper;
-          
+            _configurationSettings = configurationSettings;
+            _emailSender = emailSender;
+
         }
 
         #region Public
@@ -47,13 +54,28 @@ namespace HealtCare_Core.Managers
                     Email = userReg.Email.ToLower(),
                     Password = hashedPassword,
                     ConfirmPassword = hashedPassword,
-                    Image = string.Empty
+                    Phone = userReg.Phone,
+                    StateId = userReg.StateId,
+                    CityId = userReg.CityId,
+                    ConfirmationLink = Guid.NewGuid().ToString().Replace("-", "").ToString()
+
+
                 }).Entity;
 
                 _dbContext.SaveChanges();
 
-                var res = _mapper.Map<LoginUserResponse>(user);
-                res.Token = $"Bearer {GenerateJWTToken(user)}";
+            var builder = new EmailBuilder(ActionInvocationTypeEnum.EmailConfirmation,
+                                new Dictionary<string, string>
+                                {
+                                    { "AssigneeName", $"{userReg.FirstName} {userReg.LastName}" },
+                                    { "Link", $"{user.ConfirmationLink}" }
+                                }, "https://localhost:44309");
+
+            var message = new Message(new string[] { user.Email }, builder.GetTitle(), builder.GetBody());
+            _emailSender.SendEmail(message);
+
+            var res = _mapper.Map<LoginUserResponse>(user);
+            res.Token = $"Bearer {GenerateJWTToken(user)}";
 
                 return res;
             }
@@ -75,39 +97,52 @@ namespace HealtCare_Core.Managers
                 return res;
             }
 
-            public UserModelView UpdateProfile(UserModelView currentUser, UserModelView request)
-            {
-                var user = _dbContext.Users
-                        .FirstOrDefault(a => a.Id == currentUser.Id)
-                        ?? throw new ServiceValidationException("User not found");
+        public UserModelView UpdateProfile(UserModelView currentUser, UserModelView request)
+        {
+            var user = _dbContext.Users
+                    .FirstOrDefault(a => a.Id == currentUser.Id)
+                    ?? throw new ServiceValidationException("User not found");
+    
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.Email = request.Email;
+            user.Password = request.Password;
+            user.Phone = request.Phone;
+            user.StateId = request.StateId;
+            user.CityId = request.CityId;
 
-                var url = "";
-
-                if (!string.IsNullOrWhiteSpace(request.ImageString))
-                {
-                    url = Helper.SaveImage(request.ImageString, "profileimages");
-                }
-
-                user.FirstName = request.FirstName;
-                user.LastName = request.LastName;
-                user.Email = request.Email;
-                user.Password = request.Password;
-                user.Address = request.Address;
-                user.Phone = request.Phone;
-                user.StateId=request.StateId;
-                user.CityId=request.CityId;
-                user.Birthday=request.Birthday;
-
-                if (!string.IsNullOrWhiteSpace(url))
-                {
-                    var baseURL = "https://localhost:44309/";
-                    user.Image = @$"{baseURL}/api/v1/user/fileretrive/profilepic?filename={url}";
-                }
-
-                _dbContext.SaveChanges();
-                return _mapper.Map<UserModelView>(user);
+            _dbContext.SaveChanges();
+            return _mapper.Map<UserModelView>(user);
         }
+        public void DeleteUser(UserModelView currentUser, int id)
+        {
+            if (currentUser.Id == id)
+            {
+                throw new ServiceValidationException("You have no access to delete your self");
+            }
 
+            var user = _dbContext.Users
+                                    .FirstOrDefault(a => a.Id == id)
+                                    ?? throw new ServiceValidationException("User not found");
+            // for soft delete
+            user.Archived = true;
+            _dbContext.SaveChanges();
+
+             }
+
+        public UserModelView Confirmation(string ConfirmationLink)
+        {
+            var user = _dbContext.Users
+                           .FirstOrDefault(a => a.ConfirmationLink
+                                                    .Equals(ConfirmationLink)
+                                                && !a.EmailConfirmed)
+                       ?? throw new ServiceValidationException("Invalid or expired confirmation link received");
+
+            user.EmailConfirmed = true;
+            user.ConfirmationLink = string.Empty;
+            _dbContext.SaveChanges();
+            return _mapper.Map<UserModelView>(user);
+        }
 
         #endregion Public
 
@@ -126,8 +161,8 @@ namespace HealtCare_Core.Managers
 
             private string GenerateJWTToken(User user)
             {
-                var jwtKey = "#test.key*&^vanthis%$^&*()$%^@#$@!@#%$#^%&*%^*";
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+             
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationSettings.JwtKey));
                 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
                 var claims = new[]
@@ -136,15 +171,16 @@ namespace HealtCare_Core.Managers
                         new Claim(JwtRegisteredClaimNames.Email, user.Email),
                         new Claim("Id", user.Id.ToString()),
                         new Claim("FirstName", user.FirstName),
+                        //new Claim("RoleName", user.UserRoles),
                         new Claim("DateOfJoining", user.CreatedDate.ToString("yyyy-MM-dd")),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
 
-                var issuer = "test.com";
+                
 
                 var token = new JwtSecurityToken(
-                            issuer,
-                            issuer,
+                            _configurationSettings.Issuer,
+                            _configurationSettings.Issuer,
                             claims,
                             expires: DateTime.Now.AddDays(20),
                             signingCredentials: credentials);
@@ -152,16 +188,9 @@ namespace HealtCare_Core.Managers
                 return new JwtSecurityTokenHandler().WriteToken(token);
             }
 
+     
         #endregion private
-        public UserModelView Confirmation(string ConfirmationLink)
-        {
-            throw new NotImplementedException();
-        }
 
-
-      
-
-       
 
 
 

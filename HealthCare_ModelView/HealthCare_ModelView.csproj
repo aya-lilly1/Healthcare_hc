@@ -3,7 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
+	
+	<ItemGroup>
+		<PackageReference Include="Serilog" Version="2.11.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.10" />
+		<PackageReference Include="AutoMapper" Version="11.0.1" />
+	</ItemGroup>
+	
   <ItemGroup>
     <ProjectReference Include="..\healtcare_common\HealthCare_Common.csproj" />
     <ProjectReference Include="..\HealthCare_DbModel\HealthCare_DbModel.csproj" />

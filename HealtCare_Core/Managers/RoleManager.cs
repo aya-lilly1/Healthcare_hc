@@ -23,10 +23,10 @@ namespace HealthCare_Core.Managers
             _mapper = mapper;
         }
 
-        public bool CheckAccess(UserModelView userModel, List<string> persmissions)
+        public bool CheckAccess(UserModelView userModelView, List<string> persmissions)
         {
             var userTest = _dbContext.Users
-                                        .FirstOrDefault(a => a.Id == userModel.Id)
+                                        .FirstOrDefault(a => a.Id == userModelView.Id)
                                         ?? throw new ServiceValidationException("Invalid user id");
 
             if (userTest.IsSuperAdmin)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CsvWorker.DbModel.Models.RoleModels
+namespace Healthcare_hc.Models.RoleModels
 {
     public class Module
     {

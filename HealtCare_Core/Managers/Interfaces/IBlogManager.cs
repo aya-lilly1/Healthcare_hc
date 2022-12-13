@@ -1,11 +1,15 @@
 ﻿
 
+using HealthCare_Common.Extensions;
 using HealthCare_ModelView;
 
 namespace HealthCare_Core.Managers.Interfaces
 {
     public interface IBlogManager : IManager
     {
+        BlogModelView CreateBlog(UserModelView currentUser, BlogRequest blogMV);
+
+
         BlogResponse GetBlogs(int page = 1,
                             int pageSize = 10,
                             StatusEnum statusEnum = StatusEnum.All,
@@ -13,7 +17,7 @@ namespace HealthCare_Core.Managers.Interfaces
                             string sortDirection = "ascending",
                             string searchText = "");
 
-        BlogModelView GetBlog(UserModelView currentUser, int id);
+        PagedResult<BlogModelView> GetBlog(int id, int page = 1, int pageSize = 10);
 
         BlogModelView PutBlog(UserModelView currentUser, BlogRequest blogRequest);
 

@@ -31,13 +31,14 @@ namespace Healthcare_hc.Controllers
                 }
 
                 var ClaimId = User.Claims.FirstOrDefault(c => c.Type == "Id");
+                
 
                 _ = int.TryParse(ClaimId.Value, out int idd);
                 
                 if (ClaimId == null || !int.TryParse(ClaimId.Value, out int id))
                 {
                     throw new ServiceValidationException(401, "Invalid or expired token");
-                }
+                } 
 
                 var commonManager = HttpContext.RequestServices.GetService(typeof(ICommonManager)) as ICommonManager;
 

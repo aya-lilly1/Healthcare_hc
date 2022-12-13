@@ -6,6 +6,8 @@
 	<ItemGroup>
 
 		<PackageReference Include="AutoMapper" Version="11.0.1" />
+
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
 		<PackageReference Include="CsvHelper" Version="28.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.16" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
@@ -17,8 +19,10 @@
 
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\EmailService\HealthCare_EmailService.csproj" />
 	  <ProjectReference Include="..\healtcare_common\HealthCare_Common.csproj" />
 	  <ProjectReference Include="..\HealthCare_DbModel\HealthCare_DbModel.csproj" />
+	  <ProjectReference Include="..\HealthCare_infrastructure\HealthCare_infrastructure.csproj" />
 	  <ProjectReference Include="..\HealthCare_ModelView\HealthCare_ModelView.csproj" />
 	</ItemGroup>
 

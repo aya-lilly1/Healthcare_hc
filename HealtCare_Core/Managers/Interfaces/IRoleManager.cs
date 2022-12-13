@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HealthCare_ModelView;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace HealthCare_Core.Managers.Interfaces
 {
     public interface IRoleManager : IManager
     {
-        bool CheckAccess(UserModel userModel, List<string> persmissions);
+        bool CheckAccess(UserModelView userModelView, List<string> persmissions);
     }
 }

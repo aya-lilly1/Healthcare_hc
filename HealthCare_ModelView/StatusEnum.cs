@@ -1,4 +1,4 @@
-﻿namespace CsvWorker.ModelViews.ModelView
+﻿namespace HealthCare_ModelView
 {
     public enum StatusEnum
     {

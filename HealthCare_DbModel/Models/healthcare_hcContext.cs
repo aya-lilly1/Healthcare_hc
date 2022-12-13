@@ -1,7 +1,5 @@
-﻿using System;
-using Healthcare_hc.Models.RoleModels;
+﻿using Healthcare_hc.Models.RoleModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -18,10 +16,9 @@ namespace Healthcare_hc.Models
         {
         }
 
-        public virtual DbSet<Admin> Admins { get; set; }
+   
         public virtual DbSet<Blog> Blogs { get; set; }
         public virtual DbSet<City> Cities { get; set; }
-        public virtual DbSet<Clinic> Clinics { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Doctor> Doctors { get; set; }
         public virtual DbSet<DoctorAppointment> DoctorAppointments { get; set; }
@@ -42,36 +39,13 @@ namespace Healthcare_hc.Models
             if (!optionsBuilder.IsConfigured)
             {
 
-                optionsBuilder.UseMySQL("Server=localhost;port=3306;user=root;password=Manager@123456;database=healthcare_hc;");
+                optionsBuilder.UseMySQL("Server=localhost;port=3306;user=root;password=Manager@123456;database=healthcare_hc;Convert Zero Datetime=True");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Admin>(entity =>
-            {
-                entity.ToTable("admin");
-
-                entity.HasIndex(e => e.Id, "id_UNIQUE")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.AdminId, "idadmin_UNIQUE")
-                    .IsUnique();
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int unsigned")
-                    .HasColumnName("id");
-
-                entity.Property(e => e.AdminId)
-                    .HasColumnType("int unsigned")
-                    .HasColumnName("adminId");
-
-                entity.HasOne(d => d.AdminNavigation)
-                    .WithOne(p => p.Admin)
-                    .HasForeignKey<Admin>(d => d.AdminId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("adminId_userId");
-            });
+          
 
             modelBuilder.Entity<Blog>(entity =>
             {
@@ -96,13 +70,9 @@ namespace Healthcare_hc.Models
                     .HasColumnType("int unsigned")
                     .HasColumnName("creatorId");
 
-                entity.Property(e => e.Image)
-                    .IsRequired()
-                    .HasMaxLength(500)
-                    .HasColumnName("image");
-
+               
                 entity.Property(e => e.Status)
-                    .HasColumnType("tinyint")
+                    .HasColumnType("int")
                     .HasColumnName("status");
 
                 entity.Property(e => e.Title)
@@ -115,7 +85,7 @@ namespace Healthcare_hc.Models
                     .WithMany(p => p.Blogs)
                     .HasForeignKey(d => d.CreatorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("blog_doctorId");
+                    .HasConstraintName("blog_Id");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("timestamp")
@@ -134,6 +104,8 @@ namespace Healthcare_hc.Models
                 entity.HasIndex(e => e.Id, "id_UNIQUE")
                     .IsUnique();
 
+                entity.Property(e => e.Archived).HasColumnName("archived");
+
                 entity.Property(e => e.Id)
                     .HasColumnType("int unsigned")
                     .HasColumnName("id");
@@ -142,38 +114,6 @@ namespace Healthcare_hc.Models
                     .IsRequired()
                     .HasMaxLength(45)
                     .HasColumnName("name");
-            });
-
-            modelBuilder.Entity<Clinic>(entity =>
-            {
-                entity.ToTable("clinic");
-
-                entity.HasIndex(e => e.Id, "id_UNIQUE")
-                    .IsUnique();
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int unsigned")
-                    .HasColumnName("id");
-
-                entity.Property(e => e.Archived).HasColumnName("archived");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .HasColumnName("name");
-
-                entity.Property(e => e.Status)
-                    .HasColumnName("status")
-                    .HasDefaultValueSql("'1'");
-
-                entity.Property(e => e.CreatedDate)
-                   .HasColumnType("timestamp")
-                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                entity.Property(e => e.UpdatedDate)
-                   .HasColumnType("timestamp")
-                   .ValueGeneratedOnAddOrUpdate()
-                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
             modelBuilder.Entity<Department>(entity =>
@@ -181,24 +121,25 @@ namespace Healthcare_hc.Models
                 entity.ToTable("department");
 
                 entity.HasIndex(e => e.Id, "id_UNIQUE")
-                    .IsUnique();
+                    .IsUnique(); 
+
+                entity.Property(e => e.Archived).HasColumnName("Archived");  
 
                 entity.Property(e => e.Id)
                     .HasColumnType("int unsigned")
-                    .HasColumnName("id");
+                    .HasColumnName("Id");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(45)
-                    .HasColumnName("name");
+                    .HasColumnName("Name");
             });
 
             modelBuilder.Entity<Doctor>(entity =>
             {
                 entity.ToTable("doctor");
 
-                entity.HasIndex(e => e.ClinicId, "clinicId_UNIQUE")
-                    .IsUnique();
+              
 
                 entity.HasIndex(e => e.DepartmentId, "departmentId_UNIQUE")
                     .IsUnique();
@@ -214,29 +155,31 @@ namespace Healthcare_hc.Models
 
                 entity.Property(e => e.Id)
                     .HasColumnType("int unsigned")
-                    .HasColumnName("id");
+                    .HasColumnName("Id");
 
-                entity.Property(e => e.ClinicId)
-                    .HasColumnType("int unsigned")
-                    .HasColumnName("clinicId");
-
+               
                 entity.Property(e => e.DepartmentId)
                     .HasColumnType("int unsigned")
-                    .HasColumnName("departmentId");
+                    .HasColumnName("DepartmentId");
 
                 entity.Property(e => e.DoctorId)
                     .HasColumnType("int unsigned")
-                    .HasColumnName("doctorId");
+                    .HasColumnName("DoctorId");
 
                 entity.Property(e => e.Status)
-                    .HasColumnName("status")
+                    .HasColumnName("Status")
                     .HasDefaultValueSql("'1'");
 
-                entity.HasOne(d => d.Clinic)
-                    .WithOne(p => p.Doctor)
-                    .HasForeignKey<Doctor>(d => d.ClinicId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("clinic_doctor");
+                entity.Property(e => e.Address)
+                    .HasColumnName("Address");
+
+
+                entity.Property(e => e.ClinicName)
+                    .HasColumnName("ClinicName");
+
+                entity.Property(e => e.Image)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
                 entity.HasOne(d => d.Department)
                     .WithOne(p => p.Doctor)
@@ -282,11 +225,23 @@ namespace Healthcare_hc.Models
 
                 entity.Property(e => e.StartTime).HasColumnName("startTime");
 
-                entity.HasOne(d => d.Doctor)
+                entity.HasOne(d => d.User)
                     .WithOne(p => p.DoctorAppointment)
                     .HasForeignKey<DoctorAppointment>(d => d.DoctorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("doctorId_Appointment");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("timestamp")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.UpdatedDate)
+                    .HasColumnType("timestamp")
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Archived).HasColumnName("archived");
+
             });
 
             modelBuilder.Entity<Patient>(entity =>
@@ -326,9 +281,8 @@ namespace Healthcare_hc.Models
 
                 entity.HasIndex(e => e.DoctorId, "doctorId_appointment_idx");
 
-                entity.HasIndex(e => e.PatientId, "patientId_UNIQUE")
-                    .IsUnique();
-
+                entity.HasIndex(e => e.PatientId, "patientId_UNIQUE");
+                    
                 entity.HasIndex(e => e.PatientId, "patientId_appointment_idx");
 
                 entity.Property(e => e.Id).HasColumnType("int unsigned");
@@ -347,27 +301,24 @@ namespace Healthcare_hc.Models
                 entity.Property(e => e.PatientId)
                     .HasColumnType("int unsigned")
                     .HasColumnName("patientId");
+
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("timestamp")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                entity.Property(e => e.UpdatedDate)
-                   .HasColumnType("timestamp")
-                   .ValueGeneratedOnAddOrUpdate()
-                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(e => e.Time).HasColumnName("time");
 
-                entity.HasOne(d => d.Doctor)
+                entity.HasOne(d => d.User)
                     .WithOne(p => p.PatientAppointment)
-                    .HasPrincipalKey<Doctor>(p => p.DoctorId)
+                    .HasPrincipalKey<User>(p => p.Id)
                     .HasForeignKey<PatientAppointment>(d => d.DoctorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("doctor_appointment");
 
-                entity.HasOne(d => d.Patient)
+                entity.HasOne(d => d.User)
                     .WithOne(p => p.PatientAppointment)
-                    .HasPrincipalKey<Patient>(p => p.PatientId)
+                    .HasPrincipalKey<User>(p => p.Id)
                     .HasForeignKey<PatientAppointment>(d => d.PatientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("patientId_appointment");
@@ -382,6 +333,8 @@ namespace Healthcare_hc.Models
 
                 entity.HasIndex(e => e.Id, "id_UNIQUE")
                     .IsUnique();
+
+                entity.Property(e => e.Archived).HasColumnName("archived");
 
                 entity.Property(e => e.Id)
                     .HasColumnType("int unsigned")
@@ -405,7 +358,7 @@ namespace Healthcare_hc.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("users");
+                entity.ToTable("user");
 
                 entity.HasIndex(e => e.CityId, "cityId_UNIQUE")
                     .IsUnique();
@@ -420,58 +373,46 @@ namespace Healthcare_hc.Models
 
                 entity.Property(e => e.Id)
                     .HasColumnType("int unsigned")
-                    .HasColumnName("id");
+                    .HasColumnName("Id");
 
-                entity.Property(e => e.Archived).HasColumnName("archived");
+                entity.Property(e => e.Archived).HasColumnName("Archived");
 
-                entity.Property(e => e.Birthday)
-                    .HasColumnType("date")
-                    .HasColumnName("birthday");
-
-                entity.Property(e => e.Address)
-                   .IsRequired()
-                   .HasMaxLength(300)
-                   .HasColumnName("address");
-
+               
                 entity.Property(e => e.CityId)
                     .HasColumnType("int unsigned")
-                    .HasColumnName("cityId");
+                    .HasColumnName("CityId");
 
                 entity.Property(e => e.ConfirmPassword)
                     .IsRequired()
                     .HasMaxLength(100)
-                    .HasColumnName("confirmPassword");
+                    .HasColumnName("ConfirmPassword");
 
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(100)
-                    .HasColumnName("email");
+                    .HasColumnName("Email");
 
                 entity.Property(e => e.FirstName)
                     .IsRequired()
                     .HasMaxLength(45)
-                    .HasColumnName("firstName")
+                    .HasColumnName("FirstName")
                     .HasDefaultValueSql("'\"\"'");
-
-                entity.Property(e => e.Image)
-                    .IsRequired()
-                    .HasMaxLength(500);
 
                 entity.Property(e => e.LastName)
                     .IsRequired()
                     .HasMaxLength(45)
-                    .HasColumnName("lastName")
+                    .HasColumnName("LastName")
                     .HasDefaultValueSql("'\"\"'");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
                     .HasMaxLength(100)
-                    .HasColumnName("password");
+                    .HasColumnName("Password");
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
                     .HasMaxLength(45)
-                    .HasColumnName("phone");
+                    .HasColumnName("Phone");
 
                entity.Property(e => e.CreatedDate)
                     .HasColumnType("timestamp")
@@ -484,7 +425,7 @@ namespace Healthcare_hc.Models
 
                 entity.Property(e => e.StateId)
                     .HasColumnType("int unsigned")
-                    .HasColumnName("stateId");
+                    .HasColumnName("StateId");
 
                 entity.HasOne(d => d.City)
                     .WithOne(p => p.User)
@@ -497,6 +438,20 @@ namespace Healthcare_hc.Models
                     .HasForeignKey(d => d.StateId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("stateId_users");
+
+                entity.Property(e => e.ConfirmationLink)
+                     .IsRequired()
+                     .HasColumnType("varchar(500)")
+                     .UseCollation("latin1_swedish_ci");
+
+                entity.Property(e => e.IsSuperAdmin)
+                      .HasColumnType("tinyint(3)");
+
+                entity.Property(e => e.EmailConfirmed)
+                      .HasColumnType("tinyint(3)");
+
+                entity.Property(e => e.IsDoctor)
+                      .HasColumnType("tinyint(3)");
             });
 
             modelBuilder.Entity<UserRole>(entity =>
@@ -530,7 +485,7 @@ namespace Healthcare_hc.Models
                 entity.Property(e => e.Archived)
                       .HasColumnType("tinyint(3)");
 
-                entity.HasOne(d => d.Users)
+                entity.HasOne(d => d.User)
                       .WithMany(p => p.UserRoles)
                       .HasForeignKey(d => d.UserId)
                       .OnDelete(DeleteBehavior.ClientSetNull)
@@ -674,8 +629,6 @@ namespace Healthcare_hc.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.BusinessUnitId).HasColumnType("int(11)");
-
                 entity.Property(e => e.Archived).HasColumnType("tinyint(3)");
 
                 entity.Property(e => e.Name)
@@ -707,8 +660,7 @@ namespace Healthcare_hc.Models
 
                 entity.Property(e => e.RoleId).HasColumnType("int(11)");
 
-                entity.Property(e => e.BusinessUnitId).HasColumnType("int(11)");
-
+               
                 entity.Property(e => e.Title)
                       .HasColumnType("varchar(255)")
                       .UseCollation("utf8_general_ci");

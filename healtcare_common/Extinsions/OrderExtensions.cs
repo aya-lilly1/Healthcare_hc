@@ -19,12 +19,12 @@ namespace HHealthCare_Common.Extensions
             return (IOrderedQueryable<T>)source.Provider.CreateQuery<T>(call);
         }
         
-        public static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> source, string propertyName)
+        public static IOrderedQueryable<T> OrderByI<T>(this IQueryable<T> source, string propertyName)
         {
             return OrderingHelper(source, propertyName, false, false);
         }
         
-        public static IOrderedQueryable<T> OrderByDescending<T>(this IQueryable<T> source, string propertyName)
+        public static IOrderedQueryable<T> OrderByDescendingI<T>(this IQueryable<T> source, string propertyName)
         {
             return OrderingHelper(source, propertyName, true, false);
         }

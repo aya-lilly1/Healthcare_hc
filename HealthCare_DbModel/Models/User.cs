@@ -12,17 +12,15 @@ namespace Healthcare_hc.Models
     {
         public User()
         {
-            Blogs = new HashSet<Blog>();
+        
             UserRoles = new HashSet<UserRole>();
         }
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public string Image { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
-        public DateTime Birthday { get; set; }
         public string Phone { get; set; }
         public bool Archived { get; set; }
         [Timestamp]
@@ -32,14 +30,20 @@ namespace Healthcare_hc.Models
         public DateTime UpdatedDate { get; set; }
         public int StateId { get; set; }
         public int CityId { get; set; }
-        public string Address { get; set; }
-
+        public bool IsSuperAdmin { get; set; }
+        public bool IsDoctor { get; set; }
+        public bool EmailConfirmed { get; set; }
+        
+        public string ConfirmationLink { get; set; }
         public virtual City City { get; set; }
         public virtual State State { get; set; }
-        public virtual Admin Admin { get; set; }
         public virtual Doctor Doctor { get; set; }
         public virtual Patient Patient { get; set; }
-        public virtual ICollection<Blog> Blogs { get; set; }
+       
+        //public virtual ICollection<Blog> Blogs { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
+        public virtual PatientAppointment PatientAppointment { get; set; }
+        public virtual DoctorAppointment DoctorAppointment { get; set; }
+
     }
 }

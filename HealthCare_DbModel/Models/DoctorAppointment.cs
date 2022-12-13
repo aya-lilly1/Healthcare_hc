@@ -12,8 +12,8 @@ namespace Healthcare_hc.Models
         public int Id { get; set; }
         public int DoctorId { get; set; }
         public string Day { get; set; }
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
         public int NumberOfPatients { get; set; }
         public bool Archived { get; set; }
         [Timestamp]
@@ -22,6 +22,6 @@ namespace Healthcare_hc.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime UpdatedDate { get; set; }
 
-        public virtual Doctor Doctor { get; set; }
+        public virtual User User { get; set; }
     }
 }

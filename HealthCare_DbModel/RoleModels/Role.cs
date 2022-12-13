@@ -15,8 +15,6 @@ namespace Healthcare_hc.Models.RoleModels
 
         public string Name { get; set; }
 
-        public int? BusinessUnitId { get; set; }
-
         public DateTime CreatedUTC { get; set; }
 
         public DateTime LastUpdatedUTC { get; set; }

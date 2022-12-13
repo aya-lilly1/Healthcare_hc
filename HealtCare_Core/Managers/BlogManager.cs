@@ -6,9 +6,9 @@ using HealthCare_ModelView;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using HealthCare_Common.Extinsions;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HHealthCare_Common.Extensions;
 
 namespace HealthCare_Core.Managers
 {
@@ -23,11 +23,12 @@ namespace HealthCare_Core.Managers
             _mapper = mapper;
         }
 
+
         public void ArchiveBlog(UserModelView currentUser, int id)
         {
-            if (!currentUser.IsSuperAdmin)
+            if (!currentUser.IsSuperAdmin && !currentUser.IsDoctor)
             {
-                throw new ServiceValidationException("You don't have permission to archive blog");
+                throw new ServiceValidationException("You don't have permission to Delete");
             }
 
             var data = _dbContext.Blogs
@@ -37,23 +38,49 @@ namespace HealthCare_Core.Managers
             _dbContext.SaveChanges();
         }
 
-        public BlogModelView GetBlog(UserModelView currentUser, int id)
+        public BlogModelView CreateBlog(UserModelView currentUser, BlogRequest blogMV)
         {
-            var allowedPermissions = new List<string> { "blog_all_view", "blog_view" };
+
+            var allowedPermissions = new List<string> { "blog_create" };
 
             var hasAccess = currentUser.Permissions.Any(a => allowedPermissions.Contains(a.Code));
 
-            var isAllView = currentUser.Permissions.Any(a => a.Code.Equals("blog_all_view"));
+            var isAllView = currentUser.Permissions.Any(a => a.Code.Equals("blog_create"));
 
-            var res = _dbContext.Blogs
-                                   .Include("Creator")
-                                   .FirstOrDefault(a => (currentUser.IsSuperAdmin
-                                                        || (hasAccess
-                                                            && (isAllView || a.CreatorId == currentUser.Id)))
-                                                        && a.Id == id)
-                                   ?? throw new ServiceValidationException("Invalid blog id received");
+            if (!currentUser.IsDoctor)
+            {
+                throw new ServiceValidationException("You don't have permission to create");
+            }
+            var blog = _dbContext.Blogs.Add(new Blog
+            {
+                Title = blogMV.Title,
+                Content = blogMV.Content,
+                CreatorId = currentUser.Id,
+                Status = (int)blogMV.Status,
 
-            return _mapper.Map<BlogModelView>(res);
+            }).Entity;
+
+            _dbContext.SaveChanges();
+            var res = _mapper.Map<BlogModelView>(blog);
+
+            return res;
+        }
+        public PagedResult<BlogModelView> GetBlog(int id, int page = 1, int pageSize = 10)
+        {
+
+            var res = _dbContext.Blogs.Where(a => a.Archived == false)
+                                   .Include("Creator").Where(a => a.CreatorId == id )
+                                   .Select(x => new BlogModelView
+                                   {
+                                       Id = x.Id,
+                                       CreatorId=x.CreatorId,
+                                       Title = x.Title,
+                                       Content = x.Content,
+                                       CreatedDate = x.CreatedDate
+                                   }).GetPaged(page, pageSize);
+
+
+            return res;
         }
 
         public BlogResponse GetBlogs(int page = 1,
@@ -73,12 +100,12 @@ namespace HealthCare_Core.Managers
             if (!string.IsNullOrWhiteSpace(sortColumn)
                 && sortDirection.Equals("ascending", StringComparison.InvariantCultureIgnoreCase))
             {
-                queryRes = queryRes.OrderBy(sortColumn);
+                queryRes = queryRes.OrderByI(sortColumn);
             }
             else if (!string.IsNullOrWhiteSpace(sortColumn)
                 && sortDirection.Equals("descending", StringComparison.InvariantCultureIgnoreCase))
             {
-                queryRes = queryRes.OrderByDescending(sortColumn);
+                queryRes = queryRes.OrderByDescendingI(sortColumn);
             }
 
             var res = queryRes.GetPaged(page, pageSize);
@@ -120,29 +147,32 @@ namespace HealthCare_Core.Managers
         {
             Blog blog = null;
 
-            if (blogRequest.Id > 0)
+            if (!currentUser.IsSuperAdmin && !currentUser.IsDoctor)
             {
-                blog = _dbContext.Blogs
-                                    .FirstOrDefault(a => a.Id == blogRequest.Id)
-                                    ?? throw new ServiceValidationException("Invalid blog id received");
+                throw new ServiceValidationException("You don't have permission to update");
+            }
 
-                blog.Title = blogRequest.Title;
-                blog.Content = blogRequest.Content;
-                blog.Status = (int)blogRequest.Status;
-            }
-            else
-            {
-                blog = _dbContext.Blogs.Add(new Blog
-                {
-                    Title = blogRequest.Title,
-                    Content = blogRequest.Content,
-                    CreatorId = currentUser.Id,
-                    Status = (int)blogRequest.Status
-                }).Entity;
-            }
+            blog = _dbContext.Blogs
+                                .FirstOrDefault(a => a.Id == blogRequest.Id)
+                                ?? throw new ServiceValidationException("Invalid blog id received");
+
+            blog.Title = blogRequest.Title;
+            blog.Content = blogRequest.Content;
+            blog.Status = (int)blogRequest.Status;
+
+
+
+
 
             _dbContext.SaveChanges();
             return _mapper.Map<BlogModelView>(blog);
+        }
+
+        public int BolgPagesNum(int pageSize)
+        {
+            int blogCount = _dbContext.Blogs.Count();
+            int pagesCount = blogCount / pageSize;
+            return pagesCount;
         }
 
     }

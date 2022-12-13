@@ -9,7 +9,7 @@ namespace Healthcare_hc.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-
+        public bool Archived { get; set; }
         public virtual State State { get; set; }
         public virtual User User { get; set; }
     }

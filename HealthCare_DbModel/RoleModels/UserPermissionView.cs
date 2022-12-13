@@ -3,7 +3,6 @@
     public class UserPermissionView
     {
         public int UserId { get; set; }
-        public int? BusinessUnitId { get; set; }
         public string Title { get; set; }
         public string Code { get; set; }
         public string RoleName { get; set; }

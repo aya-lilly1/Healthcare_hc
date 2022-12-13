@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Asn1.Cms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,15 +14,13 @@ namespace Healthcare_hc.Models
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
         public string Day { get; set; }
-        public TimeSpan Time { get; set; }
+        public DateTime Time { get; set; }
         public bool Archived { get; set; }
         [Timestamp]
         public DateTime CreatedDate { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime UpdatedDate { get; set; }
-
-        public virtual Doctor Doctor { get; set; }
-        public virtual Patient Patient { get; set; }
+ 
+   //     public virtual Doctor Doctor { get; set; }
+        public virtual User User { get; set; }
     }
 }

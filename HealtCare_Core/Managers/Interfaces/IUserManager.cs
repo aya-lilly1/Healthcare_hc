@@ -5,9 +5,6 @@ namespace HealthCare_Core.Managers.Interfaces
 {
     public interface IUserManager : IManager
     {
-        //login
-        //signup
-        //update
 
         UserModelView UpdateProfile(UserModelView currentUser, UserModelView request);
 
@@ -15,7 +12,7 @@ namespace HealthCare_Core.Managers.Interfaces
 
         LoginUserResponse SignUp(UserRegistrationModel userReg);
 
-        // void DeleteUser(UserModel currentUser, int id);
+         void DeleteUser(UserModelView currentUser, int id);
 
         UserModelView Confirmation(string ConfirmationLink);
     }
