@@ -72,6 +72,15 @@ namespace HealthCare_Core.Managers
             }).Entity;
 
             _dbContext.SaveChanges();
+            var builder = new EmailBuilder(ActionInvocationTypeEnum.EmailConfirmation,
+                               new Dictionary<string, string>
+                               {
+                                    { "AssigneeName", $"{DoctorReg.FirstName} {DoctorReg.LastName}" },
+                                    { "Link", $"{user.ConfirmationLink}" }
+                               }, "https://localhost:44309");
+
+            var message = new Message(new string[] { user.Email }, builder.GetTitle(), builder.GetBody());
+            _emailSender.SendEmail(message);
 
 
             var res = _mapper.Map<LoginUserResponse>(user);
