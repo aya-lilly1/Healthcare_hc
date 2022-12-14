@@ -1,0 +1,218 @@
+CREATE TABLE `user` (
+  `Id` int unsigned NOT NULL AUTO_INCREMENT,
+  `FirstName` varchar(45) NOT NULL DEFAULT '""',
+  `LastName` varchar(45) NOT NULL DEFAULT '""',
+  `Email` varchar(100) NOT NULL,
+  `Password` varchar(100) NOT NULL,
+  `ConfirmPassword` varchar(100) NOT NULL,
+  `Phone` varchar(45) NOT NULL,
+  `CreatedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Archived` tinyint unsigned NOT NULL DEFAULT '0',
+  `StateId` int unsigned NOT NULL,
+  `cityId` int NOT NULL,
+  `IsSuperAdmin` tinyint NOT NULL DEFAULT '0',
+  `ConfirmationLink` varchar(500) DEFAULT NULL,
+  `EmailConfirmed` tinyint NOT NULL DEFAULT '0',
+  `IsDoctor` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `email_UNIQUE` (`Email`),
+  KEY `stateId_users_idx` (`StateId`),
+  CONSTRAINT `stateId_users` FOREIGN KEY (`StateId`) REFERENCES `state` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `doctor` (
+  `Id` int unsigned NOT NULL AUTO_INCREMENT,
+  `DoctorId` int unsigned NOT NULL,
+  `DepartmentId` int unsigned NOT NULL,
+  `Status` tinyint unsigned NOT NULL DEFAULT '1',
+  `Address` varchar(300) NOT NULL,
+  `ClinicName` varchar(255) NOT NULL,
+  `Image` varchar(500) NOT NULL DEFAULT '""',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `id_UNIQUE` (`Id`),
+  UNIQUE KEY `userId_UNIQUE` (`DoctorId`),
+  KEY `depatrmentId_doctor_idx` (`DepartmentId`),
+  CONSTRAINT `depatrmentId_doctor` FOREIGN KEY (`DepartmentId`) REFERENCES `department` (`Id`),
+  CONSTRAINT `doctorId_doctor` FOREIGN KEY (`DoctorId`) REFERENCES `user` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `doctor_appointment` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `doctorId` int unsigned NOT NULL,
+  `day` varchar(45) NOT NULL,
+  `startTime` datetime NOT NULL,
+  `endTime` datetime NOT NULL,
+  `numberOfPatients` int NOT NULL,
+  `CreatedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `archived` tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `doctorId_Appointment_idx` (`doctorId`),
+  CONSTRAINT `doctorId_Appointment` FOREIGN KEY (`doctorId`) REFERENCES `user` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `patient_appointment` (
+  `Id` int unsigned NOT NULL AUTO_INCREMENT,
+  `patientId` int unsigned NOT NULL,
+  `doctorId` int unsigned NOT NULL,
+  `day` varchar(45) NOT NULL,
+  `time` datetime NOT NULL,
+  `archived` tinyint unsigned NOT NULL DEFAULT '0',
+  `createdDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Id_UNIQUE` (`Id`),
+  KEY `patientId_appointment_idx` (`patientId`),
+  KEY `doctor_appointment_idx` (`doctorId`),
+  CONSTRAINT `doctor_appointment` FOREIGN KEY (`doctorId`) REFERENCES `user` (`Id`),
+  CONSTRAINT `patientId_appointment` FOREIGN KEY (`patientId`) REFERENCES `user` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `blog` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `creatorId` int unsigned NOT NULL,
+  `title` varchar(250) NOT NULL DEFAULT '""',
+  `content` text NOT NULL,
+  `status` int NOT NULL,
+  `createdDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `archived` tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `blog_UserId_idx` (`creatorId`),
+  CONSTRAINT `blog_Id` FOREIGN KEY (`creatorId`) REFERENCES `user` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `city` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `archived` tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `department` (
+  `Id` int unsigned NOT NULL AUTO_INCREMENT,
+  `Name` varchar(45) NOT NULL,
+  `Archived` tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `module` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(255) NOT NULL DEFAULT '',
+  `Key` varchar(255) NOT NULL DEFAULT '',
+  `CreatedUTC` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedUTC` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Archived` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Id`,`Name`),
+  UNIQUE KEY `Id_UNIQUE` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `permission` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `ModuleId` int NOT NULL,
+  `Title` varchar(255) NOT NULL,
+  `Code` varchar(255) NOT NULL,
+  `Description` text,
+  `CreatedUTC` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedUTC` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Archived` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Id_UNIQUE` (`Id`),
+  KEY `ModuleId_PrmessionModuleId_idx` (`ModuleId`),
+  CONSTRAINT `ModuleId_PrmessionModuleId` FOREIGN KEY (`ModuleId`) REFERENCES `module` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `role` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(255) NOT NULL DEFAULT '',
+  `CreatedUTC` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedUTC` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Archived` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Id_UNIQUE` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `rolepermission` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `RoleId` int NOT NULL,
+  `PermissionId` int NOT NULL,
+  `CreatedUTC` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedUTC` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Archived` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Id_UNIQUE` (`Id`),
+  KEY `RoleId_RolePermission_idx` (`RoleId`),
+  KEY `PermissionId_RolePermission_idx` (`PermissionId`),
+  CONSTRAINT `PermissionId_UserPermissionId` FOREIGN KEY (`PermissionId`) REFERENCES `permission` (`Id`),
+  CONSTRAINT `RoleId_RolePermission` FOREIGN KEY (`RoleId`) REFERENCES `role` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `state` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `cityId` int NOT NULL,
+  `archived` tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `userrole` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `RoleId` int NOT NULL,
+  `UserId` int unsigned NOT NULL,
+  `CreatedUTC` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastUpdatedUTC` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Archived` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Id_UNIQUE` (`Id`),
+  KEY `UserRole_UserId_idx` (`UserId`),
+  KEY `UserRole_RoleId_idx` (`RoleId`),
+  CONSTRAINT `UserRole_RoleId` FOREIGN KEY (`RoleId`) REFERENCES `role` (`Id`),
+  CONSTRAINT `UserRole_UserId` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`))
+  ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+  
+  CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`
+  SQL SECURITY DEFINER VIEW `healthcare_hc`.`userpermissionview` 
+  AS select `data`.`UserId` AS `UserId`,
+  `data`.`RoleName` AS `RoleName`,
+  `data`.`RoleId` AS `RoleId`,
+  `data`.`Title` AS `Title`,
+  `data`.`Code` AS `Code`,
+  `data`.`ModuleId` AS `ModuleId`,
+  `data`.`ModuleKey` AS `ModuleKey`,
+  `data`.`A1` AS `A1`,
+  `data`.`A2` AS `A2`,
+  `data`.`A3` AS `A3`,
+  `data`.`A4` AS `A4`,
+  `data`.`A5` AS `A5`,
+  `data`.`A6` AS `A6` from (select `u`.`Id` AS `UserId`,
+  `r`.`Name` AS `RoleName`,
+  `r`.`Id` AS `RoleId`,
+  `p`.`Title` AS `Title`,
+  `p`.`Code` AS `Code`,
+  `n`.`Id` AS `ModuleId`,
+  `n`.`Key` AS `ModuleKey`,
+  `ur`.`Archived` AS `A1`,
+  `r`.`Archived` AS `A2`,
+  `rp`.`Archived` AS `A3`,
+  `p`.`Archived` AS `A4`,
+  `n`.`Archived` AS `A5`,
+  0 AS `A6`
+  from(((((`healthcare_hc`.`user` `u` 
+  join 
+  `healthcare_hc`.`userrole` `ur` on((`u`.`Id` = `ur`.`UserId`))) 
+  join
+  `healthcare_hc`.`role` `r` on((`ur`.`RoleId` = `r`.`Id`))) 
+  join 
+  `healthcare_hc`.`rolepermission` `rp` on((`r`.`Id` = `rp`.`RoleId`)))
+  join 
+  `healthcare_hc`.`permission` `p` on((`rp`.`PermissionId` = `p`.`Id`)))
+  join
+  `healthcare_hc`.`module` `n` on((`p`.`ModuleId` = `n`.`Id`)))) `data`where ((`data`.`A1` = 0)
+  and(`data`.`A2` = 0)and
+  (`data`.`A3` = 0) and
+  (`data`.`A4` = 0) and
+  (`data`.`A5` = 0) and
+  (`data`.`A6` = 0));
