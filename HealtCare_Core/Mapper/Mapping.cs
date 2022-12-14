@@ -29,7 +29,7 @@ namespace HealtCare_Core.Mapper
             CreateMap<User, UserModelView>().ReverseMap();
 
             CreateMap<DoctorModelView, Doctor>().ReverseMap();
-
+            CreateMap<DoctorDataViewModel, Doctor>().ReverseMap();
             CreateMap<DoctorRegistrationModel, Doctor>().ReverseMap();
             CreateMap<PatientAppointmentModelView, PatientAppointment>().ReverseMap();
             
